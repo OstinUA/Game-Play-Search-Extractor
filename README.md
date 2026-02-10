@@ -1,24 +1,26 @@
-# Google Play Search Extractor
+# Game Store Link Extractor
 
-A lightweight Chrome Extension built with Manifest V3 designed to extract and export application links from Google Play Store search result pages. 
+A versatile Chrome Extension built with **Manifest V3** designed to extract and export application links from both **Google Play Store** and **Apple App Store** search result pages.
 
-This tool helps developers, ASO specialists, and researchers quickly gather lists of app URLs without manual copying. It intelligently filters for unique, visible items, ensuring high-quality data extraction.
+This tool helps developers, ASO specialists, and researchers quickly gather lists of app URLs without manual copying. It automatically detects the active store, filters for unique, visible items, and cleans the URLs for international use.
 
 ## Features
 
-* **Smart Extraction**: Captures links only from the visible search results area.
-* **Noise Reduction**: Automatically ignores hidden elements and footer links.
-* **Deduplication**: Ensures every extracted URL is unique (removes duplicate listings of the same app).
-* **Clean Formatting**: Exports raw, clean URLs (removes unnecessary tracking parameters).
-* **Manifest V3**: Compliant with the latest Chrome Extension security and performance standards.
+* **Dual Store Support**: Works seamlessly on `play.google.com` and `apps.apple.com`.
+* **Smart Extraction**: Captures links only from the visible search results area, ignoring hidden elements.
+* **Noise Reduction**: Automatically excludes footer links and navigation menus (e.g., `#globalnav` on Apple).
+* **Deduplication**: Ensures every extracted URL is unique using Set logic.
+* **Clean Formatting**:
+    * **Google Play**: Extracts the `id` parameter to form clean URLs.
+    * **App Store**: Extracts the ID via regex (`/id\d+/`) and removes regional codes (e.g., `/us/`, `/ru/`).
 
 ## Installation
 
-Since this extension is not yet published on the Chrome Web Store, you can install it in "Developer Mode":
+Since this extension is not published on the Chrome Web Store, you can install it in "Developer Mode":
 
 1.  Clone this repository:
     ```bash
-    git clone [https://github.com/OstinUA/Google-Play-Search-Extractor.git](https://github.com/OstinUA/Google-Play-Search-Extractor.git)
+    git clone [https://github.com/OstinUA/Game-Play-Search-Extractor.git](https://github.com/OstinUA/Game-Play-Search-Extractor.git)
     ```
 2.  Open Chrome and navigate to `chrome://extensions/`.
 3.  Enable **Developer mode** using the toggle switch in the top right corner.
@@ -27,26 +29,28 @@ Since this extension is not yet published on the Chrome Web Store, you can insta
 
 ## Usage
 
-1.  Navigate to the [Google Play Store](https://play.google.com/store/search).
-2.  Perform a search (e.g., "Strategy Games").
-3.  Scroll down to load more results if necessary.
-4.  Click the extension icon in the Chrome toolbar.
-5.  Click the **"Собрать только видимые игры"** (Collect visible games) button.
-6.  The extension will display the count of found apps and populate the text area with clean URLs.
-7.  Copy the results from the text area.
+### Google Play Store
+1.  Navigate to [Google Play Search](https://play.google.com/store/search).
+2.  Perform a search (e.g., "Strategy Games") and scroll to load results.
+3.  Click the extension icon. The status will show **"Google Play Store"**.
+4.  Click **"Собрать ссылки"** (Collect links).
+
+### Apple App Store
+1.  Navigate to [App Store Search](https://www.apple.com/us/search) or any category page.
+2.  Ensure apps are visible on the screen.
+3.  Click the extension icon. The status will show **"Apple App Store"**.
+4.  Click **"Собрать ссылки"** (Collect links).
 
 ## Technical Details
 
 * **Manifest Version**: 3
 * **Permissions**: `activeTab`, `scripting`
-* **Host Permissions**: `https://play.google.com/*`
-* **Logic**: The script checks `offsetParent` to determine visibility and validates that the link is not within the `<footer>` tag before extraction.
+* **Architecture**: The extension uses the `chrome.scripting` API to inject the specific extraction logic dynamically based on the active tab's domain.
 
-## 📂 Project Structure
+## Project Structure
 
 ```text
-├── content.js      # Background content script (auto-run)
-├── manifest.json   # Extension configuration
-├── popup.html      # Extension popup UI
-├── popup.js        # Logic for the popup actions and link extraction
-└── icons/          # Extension icons
+├── icons/          # Extension icons
+├── manifest.json   # Extension configuration and permissions
+├── popup.html      # User interface
+└── popup.js        # Core logic: URL detection and extraction algorithms
