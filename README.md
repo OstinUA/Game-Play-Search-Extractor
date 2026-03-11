@@ -1,8 +1,5 @@
 # Game Store Link Extractor
-
-<p align="center">
   <img src="https://readme-typing-svg.herokuapp.com?font=JetBrains+Mono&size=24&pause=1000&color=2F4F4F&center=true&vCenter=true&width=900&lines=Game+Store+Link+Extractor;Manifest+V3+Chrome+Extension+for+ASO+and+Research+Workflows;Scrape+clean+app+URLs+from+Google+Play+and+Apple+App+Store" alt="Typing SVG" />
-</p>
 
 **Production-minded Chrome Extension that pulls clean app URLs from Google Play and Apple App Store search pages with dedupe and noise filtering built in.**
 
