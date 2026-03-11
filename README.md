@@ -221,7 +221,3 @@ If you find this tool useful, consider leaving a ⭐ on GitHub or supporting the
 [![Boosty](https://img.shields.io/badge/Boosty-Support-f15f2c?style=flat-square)](https://boosty.to/ostinfct)
 [![YouTube](https://img.shields.io/badge/YouTube-FCT--Ostin-red?style=flat-square&logo=youtube)](https://www.youtube.com/@FCT-Ostin)
 [![Telegram](https://img.shields.io/badge/Telegram-FCTostin-2ca5e0?style=flat-square&logo=telegram)](https://t.me/FCTostin)
-
-<p align="center">
-  <img src="https://svgwave.in/svg?path=0%2C32L48%2C64C96%2C96%2C192%2C160%2C288%2C170.7C384%2C181%2C480%2C139%2C576%2C117.3C672%2C96%2C768%2C96%2C864%2C112C960%2C128%2C1056%2C160%2C1152%2C160C1248%2C160%2C1344%2C128%2C1392%2C112L1440%2C96L1440%2C320L1392%2C320C1344%2C320%2C1248%2C320%2C1152%2C320C1056%2C320%2C960%2C320%2C864%2C320C768%2C320%2C672%2C320%2C576%2C320C480%2C320%2C384%2C320%2C288%2C320C192%2C320%2C96%2C320%2C48%2C320L0%2C320Z&color=%232f4f4f" alt="Wave Divider" />
-</p>
