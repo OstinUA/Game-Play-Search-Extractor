@@ -1,56 +1,230 @@
 # Game Store Link Extractor
 
-A versatile Chrome Extension built with **Manifest V3** designed to extract and export application links from both **Google Play Store** and **Apple App Store** search result pages.
+<p align="center">
+  <img src="https://readme-typing-svg.herokuapp.com?font=JetBrains+Mono&size=24&pause=1000&color=2F4F4F&center=true&vCenter=true&width=900&lines=Game+Store+Link+Extractor;Manifest+V3+Chrome+Extension+for+ASO+and+Research+Workflows;Scrape+clean+app+URLs+from+Google+Play+and+Apple+App+Store" alt="Typing SVG" />
+</p>
 
-This tool helps developers, ASO specialists, and researchers quickly gather lists of app URLs without manual copying. It automatically detects the active store, filters for unique, visible items, and cleans the URLs for international use.
+**Production-minded Chrome Extension that pulls clean app URLs from Google Play and Apple App Store search pages with dedupe and noise filtering built in.**
+
+[![Manifest](https://img.shields.io/badge/Manifest-V3-1a73e8?style=for-the-badge&logo=googlechrome)](manifest.json)
+[![Version](https://img.shields.io/badge/Version-3.1-2f4f4f?style=for-the-badge)](manifest.json)
+[![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-f7df1e?style=for-the-badge&logo=javascript&logoColor=1f1f1f)](popup.js)
+[![License: GPL-3.0](https://img.shields.io/badge/License-GPL--3.0-blue?style=for-the-badge)](LICENSE)
+[![Platform](https://img.shields.io/badge/Platform-Chrome_Extension-4285f4?style=for-the-badge&logo=googlechrome&logoColor=white)](manifest.json)
+
+> [!NOTE]
+> This repo currently ships as an unpacked extension workflow (Developer Mode) and is not published to the Chrome Web Store.
+
+## Table of Contents
+
+- [Features](#features)
+- [Technology Stack](#technology-stack)
+- [Technical Block](#technical-block)
+  - [Project Structure](#project-structure)
+  - [Key Design Decisions](#key-design-decisions)
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+- [Testing](#testing)
+- [Deployment](#deployment)
+- [Usage](#usage)
+  - [Google Play Flow](#google-play-flow)
+  - [Apple App Store Flow](#apple-app-store-flow)
+- [Configuration](#configuration)
+- [License](#license)
+- [Contacts](#contacts)
 
 ## Features
 
-* **Dual Store Support**: Works seamlessly on `play.google.com` and `apps.apple.com`.
-* **Smart Extraction**: Captures links only from the visible search results area, ignoring hidden elements.
-* **Noise Reduction**: Automatically excludes footer links and navigation menus (e.g., `#globalnav` on Apple).
-* **Deduplication**: Ensures every extracted URL is unique using Set logic.
-* **Clean Formatting**:
-    * **Google Play**: Extracts the `id` parameter to form clean URLs.
-    * **App Store**: Extracts the ID via regex (`/id\d+/`) and removes regional codes (e.g., `/us/`, `/ru/`).
+- **Dual-store extraction pipeline**: supports `play.google.com` and `apps.apple.com` in one popup flow.
+- **Runtime store detection**: auto-detects active tab domain and wires the right extraction strategy.
+- **Visible-only scraping**: ignores hidden nodes via `offsetParent !== null` checks.
+- **DOM noise suppression**: excludes footer/global navigation blocks to avoid junk URLs.
+- **Deterministic deduplication**: normalizes entities by app identifier using `Set` semantics.
+- **Canonical URL generation**:
+  - Google Play links normalize to `https://play.google.com/store/apps/details?id=<APP_ID>`.
+  - Apple links normalize to `https://apps.apple.com/app/id<APP_ID>` (without locale segment noise).
+- **Clipboard-ready output**: extracted links are shown in a textarea, line-by-line, for instant export.
+- **Real-time counter**: popup shows number of extracted records.
 
-## Installation
+> [!TIP]
+> Scroll the search results page before running extraction so lazy-loaded cards are present in the DOM and can be collected.
 
-Since this extension is not published on the Chrome Web Store, you can install it in "Developer Mode":
+## Technology Stack
 
-1.  Clone this repository:
-    ```bash
-    git clone [https://github.com/OstinUA/Game-Play-Search-Extractor.git](https://github.com/OstinUA/Game-Play-Search-Extractor.git)
-    ```
-2.  Open Chrome and navigate to `chrome://extensions/`.
-3.  Enable **Developer mode** using the toggle switch in the top right corner.
-4.  Click the **Load unpacked** button.
-5.  Select the directory where you cloned the repository.
+- **Language**: JavaScript (ES6+)
+- **Platform**: Chrome Extension, Manifest V3
+- **Chrome APIs**:
+  - `chrome.tabs.query`
+  - `chrome.scripting.executeScript`
+- **Permissions**:
+  - `activeTab`
+  - `scripting`
+- **Host permissions**:
+  - `https://play.google.com/*`
+  - `https://apps.apple.com/*`
+- **UI layer**: lightweight popup (`popup.html` + inline styles)
+
+## Technical Block
+
+### Project Structure
+
+```text
+.
+├── icons/
+│   └── icon128.png             # Extension icon
+├── CONTRIBUTING.md             # Contribution guide
+├── LICENSE                     # GPL-3.0 license
+├── manifest.json               # MV3 metadata, permissions, action config
+├── popup.html                  # Popup UI shell
+├── popup.js                    # Domain detection + extraction algorithms
+└── README.md                   # Project docs
+```
+
+### Key Design Decisions
+
+1. **Zero backend by design**  
+   Extraction runs directly in the active tab context. No server, no external API, no telemetry.
+
+2. **Function injection strategy**  
+   The popup dynamically injects the extraction function for the detected store (`extractGooglePlayLinks` or `extractAppleStoreLinks`) to keep logic isolated and explicit.
+
+3. **ID-first canonicalization**  
+   Instead of trusting raw anchors, the code extracts stable app identifiers and reconstructs canonical URLs. This lowers duplicate and region-specific URL variance.
+
+4. **Defensive parsing**  
+   URL parsing operations are protected from malformed links to avoid hard failures during scraping sessions.
+
+> [!IMPORTANT]
+> This extension depends on current store DOM patterns. If Google/Apple rework their markup, selectors may need a hotfix.
+
+## Getting Started
+
+### Prerequisites
+
+Make sure you have:
+
+- **Google Chrome** (recent stable build)
+- **Git** (for cloning/updating the repository)
+- Optional: a GitHub account if you want to fork and contribute
+
+### Installation
+
+```bash
+# 1) Clone the repo
+git clone https://github.com/OstinUA/Game-Play-Search-Extractor.git
+
+# 2) Enter project directory
+cd Game-Play-Search-Extractor
+
+# 3) Open Chrome extension management page
+# chrome://extensions/
+
+# 4) Enable Developer mode (top-right toggle)
+
+# 5) Load unpacked extension
+# Click "Load unpacked" and select this project directory
+```
+
+> [!WARNING]
+> If you move or rename the local folder after loading unpacked, Chrome will lose track of the extension path. Reload from `chrome://extensions/`.
+
+## Testing
+
+There is no heavyweight automated test suite yet, so validation is currently **manual + behavior-driven**.
+
+Recommended smoke-check routine:
+
+```bash
+# Optional sanity check: verify extension metadata is valid JSON
+python -m json.tool manifest.json > /dev/null
+```
+
+Manual verification checklist:
+
+1. Open a Google Play search page, scroll, run extraction, verify non-zero result count.
+2. Confirm all Play links match canonical `details?id=` format.
+3. Open an Apple App Store listing/search page, scroll, run extraction.
+4. Confirm generated Apple links follow `https://apps.apple.com/app/id...` format.
+5. Confirm duplicates are removed across repeated cards/blocks.
+6. Confirm unsupported domains show disabled button + error state.
+
+## Deployment
+
+This project is currently deployed as a **source-distributed Chrome extension**.
+
+Typical production-ish distribution paths:
+
+- **Unpacked internal distribution** (fastest for teams and ASO operators)
+- **Private release bundles** via Git tags/releases
+- **Chrome Web Store packaging** (future-ready option if publishing is needed)
+
+Build notes:
+
+- There is no bundler/minifier stage required for runtime.
+- Release discipline can be handled with semantic version bumps in `manifest.json`.
+- CI can be added later for linting, metadata validation, and release packaging.
 
 ## Usage
 
-### Google Play Store
-1.  Navigate to [Google Play Search](https://play.google.com/store/search).
-2.  Perform a search (e.g., "Strategy Games") and scroll to load results.
-3.  Click the extension icon. The status will show **"Google Play Store"**.
-4.  Click **"Собрать ссылки"** (Collect links).
-
-### Apple App Store
-1.  Navigate to [App Store Search](https://www.apple.com/us/search) or any category page.
-2.  Ensure apps are visible on the screen.
-3.  Click the extension icon. The status will show **"Apple App Store"**.
-4.  Click **"Собрать ссылки"** (Collect links).
-
-## Technical Details
-
-* **Manifest Version**: 3
-* **Permissions**: `activeTab`, `scripting`
-* **Architecture**: The extension uses the `chrome.scripting` API to inject the specific extraction logic dynamically based on the active tab's domain.
-
-## Project Structure
+### Google Play Flow
 
 ```text
-├── icons/          # Extension icons
-├── manifest.json   # Extension configuration and permissions
-├── popup.html      # User interface
-└── popup.js        # Core logic: URL detection and extraction algorithms
+1) Open https://play.google.com/store/search
+2) Run your query and scroll to hydrate more result cards
+3) Click extension icon
+4) Verify status shows "Google Play Store"
+5) Click "Собрать ссылки"
+6) Copy normalized links from textarea output
+```
+
+### Apple App Store Flow
+
+```text
+1) Open an apps.apple.com app listing or search-related page
+2) Ensure app cards are visible in viewport/result blocks
+3) Click extension icon
+4) Verify status shows "Apple App Store"
+5) Click "Собрать ссылки"
+6) Copy normalized links from textarea output
+```
+
+> [!CAUTION]
+> The popup UI text is partially Russian (`Собрать ссылки`, `Сайт не поддерживается`). Keep that in mind if you are documenting screenshots or onboarding non-Russian-speaking users.
+
+## Configuration
+
+This extension does not require `.env` files or runtime secrets.
+
+Configuration surface is defined in `manifest.json`:
+
+- `version`: release/version tracking
+- `permissions`: `activeTab`, `scripting`
+- `host_permissions`: allowed target domains for script injection
+- `action.default_popup`: popup entrypoint
+- `icons`: extension assets
+
+If you add a new supported store domain, you need to update both:
+
+1. `host_permissions` in `manifest.json`
+2. Domain routing + extraction logic in `popup.js`
+
+## License
+
+Distributed under the **GPL-3.0** license. See [`LICENSE`](LICENSE) for legal details.
+
+## Contacts
+
+## ❤️ Support the Project
+
+If you find this tool useful, consider leaving a ⭐ on GitHub or supporting the author directly:
+
+[![Patreon](https://img.shields.io/badge/Patreon-OstinFCT-f96854?style=flat-square&logo=patreon)](https://www.patreon.com/OstinFCT)
+[![Ko-fi](https://img.shields.io/badge/Ko--fi-fctostin-29abe0?style=flat-square&logo=ko-fi)](https://ko-fi.com/fctostin)
+[![Boosty](https://img.shields.io/badge/Boosty-Support-f15f2c?style=flat-square)](https://boosty.to/ostinfct)
+[![YouTube](https://img.shields.io/badge/YouTube-FCT--Ostin-red?style=flat-square&logo=youtube)](https://www.youtube.com/@FCT-Ostin)
+[![Telegram](https://img.shields.io/badge/Telegram-FCTostin-2ca5e0?style=flat-square&logo=telegram)](https://t.me/FCTostin)
+
+<p align="center">
+  <img src="https://svgwave.in/svg?path=0%2C32L48%2C64C96%2C96%2C192%2C160%2C288%2C170.7C384%2C181%2C480%2C139%2C576%2C117.3C672%2C96%2C768%2C96%2C864%2C112C960%2C128%2C1056%2C160%2C1152%2C160C1248%2C160%2C1344%2C128%2C1392%2C112L1440%2C96L1440%2C320L1392%2C320C1344%2C320%2C1248%2C320%2C1152%2C320C1056%2C320%2C960%2C320%2C864%2C320C768%2C320%2C672%2C320%2C576%2C320C480%2C320%2C384%2C320%2C288%2C320C192%2C320%2C96%2C320%2C48%2C320L0%2C320Z&color=%232f4f4f" alt="Wave Divider" />
+</p>
